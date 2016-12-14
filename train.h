@@ -55,11 +55,11 @@ void create_train_start(Train_time &traintime)
             continue;
         //cout<<city<<endl;
         traintime.station_start[i]=city;
-        cout<<traintime.station_start[i]<<endl;
+        //cout<<traintime.station_start[i]<<endl;
         i++;
     }
     traintime.station_num=i;
-    cout<<traintime.station_num<<endl;
+    //cout<<traintime.station_num<<endl;
     in.close();
 }
 int located_trainTable_startCity(Train_time traintime,string city)
@@ -77,6 +77,7 @@ int located_trainTable_startCity(Train_time traintime,string city)
 }
 void creat_train_time(Train_time &traintime)
 {
+    cout<<"程序正在运行，请耐心等待!"<<endl;
     int i=0,j=0,k=0;
     string no,start,arrive,time_start,time_arrive,time_through,flag;
     ifstream in("time.txt");
@@ -97,12 +98,12 @@ void creat_train_time(Train_time &traintime)
             traintime.arrive_station[i].station_start_time[j]=time_start;
             traintime.arrive_station[i].station_arrive_time[j]=time_arrive;
             traintime.arrive_station[i].station_through_time[j]=time_through;
-            cout<<traintime.arrive_station[i].station_No[j]<<" - "
-                <<traintime.station_start[i]<<" - "
-                <<traintime.arrive_station[i].station_arrive[j]<<" - "
-                <<traintime.arrive_station[i].station_start_time[j]<<" - "
-                <<traintime.arrive_station[i].station_arrive_time[j]<<" - "
-                <<traintime.arrive_station[i].station_through_time[j]<<endl;
+//            cout<<traintime.arrive_station[i].station_No[j]<<" - "
+//                <<traintime.station_start[i]<<" - "
+//                <<traintime.arrive_station[i].station_arrive[j]<<" - "
+//                <<traintime.arrive_station[i].station_start_time[j]<<" - "
+//                <<traintime.arrive_station[i].station_arrive_time[j]<<" - "
+//                <<traintime.arrive_station[i].station_through_time[j]<<endl;
             j++;
         }
     }

@@ -56,6 +56,7 @@ void initial_Grapg(Graph &G)
 }
 void create_Graph(Graph &G)
 {
+
     int i=0,j,distan;
     ElemType_name city,city1,city2,flag1,flag2;
 
@@ -192,7 +193,7 @@ void Dijkstra(Graph G,int path[],int dist[],int vID)
         if(minDist==INF)
             return;
         //输出本次选择的顶点距离
-        cout<<"选择顶点: "<<G.VerList[v].city_name<<" --距离 : "<<minDist<<endl;
+      //  cout<<"距离: "<<G.VerList[v].city_name<<" -- : "<<minDist<<" KM"<<endl;
         solved[v]=1; //标记顶点v以找到最短距离，加入集合Ｓ中
         //对选中的顶点v，更新集合Ｖ—S中所有与Ｖ邻接的顶点距离vID的距离
         p = G.VerList[v].firstEdge;
@@ -209,42 +210,60 @@ void Dijkstra(Graph G,int path[],int dist[],int vID)
     }
 }
 /*输出最短路径*/
-void PrintDijkstra(Graph &G,int path[],int dist[],int vID)
+void PrintDijkstra(Graph &G,int path[],int dist[],int vID,int endID)
 {
     int sPath[CITY_NUM];  //保存vID到目标顶点i的最短路径顶点
     int vPre;   //前驱顶点编号
     int top=-1; //保存最短路径上的顶点个数，以控制输出最短路径
     int i,j;
-    for(i=0;i<G.VerNum;i++)
+    for(i=0; i<G.VerNum; i++)
     {
-        cout<<G.VerList[vID].city_name<<" to "<<G.VerList[i].city_name;
-        if(dist[i]==INF)
-            cout<<"无可达路径。"<<endl;
-        else
+       // cout<<G.VerList[vID].city_name<<" to "<<G.VerList[i].city_name;
+        if(endID == G.VerList[i].num)
         {
-            cout<<"　最短距离　"<<dist[i]<<endl;
-        }
-        top++;
-        sPath[top]=i;   //sPath[0]保存目标顶点编号i
-        vPre = path[i]; //取得顶点i的直接前驱编号，赋给vPre
-        //从第i个顶点，迭代求前驱顶点，直到vID，保存最短路径到sPath[]
-        while(vPre!=-1)
-        {
-            top++;
-            sPath[top]=vPre;
-            vPre = path[vPre];
-        }
-        //如果最短路径存在，依次打印vID到i顶点的最短路径顶点序列
-        if(dist[i]!=INF)
-        {
-            for(j = top;j>=0;j--) //sPath[top]为指定的起始顶点vID
+            if(dist[i]==INF)
+                cout<<"无可达路径。"<<endl;
+            else
             {
-                cout<<G.VerList[sPath[j]].city_name<<" ";
+                cout<<"　最短距离　"<<dist[i]<<endl;
             }
+            top++;
+            sPath[top]=i;   //sPath[0]保存目标顶点编号i
+            vPre = path[i]; //取得顶点i的直接前驱编号，赋给vPre
+            //从第i个顶点，迭代求前驱顶点，直到vID，保存最短路径到sPath[]
+            while(vPre!=-1)
+            {
+                top++;
+                sPath[top]=vPre;
+                vPre = path[vPre];
+            }
+            //如果最短路径存在，依次打印vID到i顶点的最短路径顶点序列
+            if(dist[i]!=INF)
+            {
+                for(j = top; j>=0; j--) //sPath[top]为指定的起始顶点vID
+                {
+                    cout<<G.VerList[sPath[j]].city_name<<" -> ";
+                }
+            }
+            top = -1;
+            cout<<endl;
         }
-        top = -1;
-        cout<<endl;
     }
+}
+////////////////////////////
+void find_city_distance(Graph G)
+{
+    int vID =-1,endID=-1,path[CITY_NUM],dist[CITY_NUM];
+
+    string start_city,end_city;
+    cout<<"Start_city and ending_city : ";
+    cin>> start_city;
+    cin>>end_city;
+    vID = located(G,start_city);
+    endID=located(G,end_city);
+    Dijkstra(G,path,dist,vID);
+    PrintDijkstra(G,path,dist,vID,endID);
+
 }
 ////////////////////////////
  int main()
@@ -257,7 +276,8 @@ void PrintDijkstra(Graph &G,int path[],int dist[],int vID)
      create_train_start(train_table);
      creat_train_time(train_table);
      create_Graph(City);
-   //  BFS(City,0);
+     find_city_distance(City);
+   //BFS(City,0);
     //read();
     return 0;
  }
