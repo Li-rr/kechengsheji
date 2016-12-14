@@ -3,7 +3,6 @@
 #include <string.h>
 using namespace std;
 #include "linkQueue.h"
-#include "train.h"
 #define CITY_NUM 60
 #define INF 63533
 int visited[CITY_NUM]={0};
@@ -11,6 +10,18 @@ typedef string ElemType_name;
 typedef int ElemType_loc;
 
 //////////////////////////////
+#define MAX_station 50
+#define TIME_TABLE 50
+/*
+ *定义时刻表
+ */
+ typedef struct{
+    string station_No;
+    string station_start_time;
+    string station_arrive_time;
+    string station_through_time;
+    int train_num;
+ } Train_time;
 /*
  *边链表
  */
@@ -18,7 +29,7 @@ typedef struct eNode{
     int num; //在顶点表中的编号
     ElemType_name city_name;
     ElemType_loc city_distance;
-   // Train_time train_table; //时刻表
+    Train_time train_table[TIME_TABLE]; //时刻表
     struct eNode * next;
 } EdgeNode;
 /*
@@ -27,8 +38,6 @@ typedef struct eNode{
  typedef struct vNode{
      int num;//在顶点表中的编号
     ElemType_name city_name;
-    ElemType_loc city_distance;
-  //  Train_time train_table; //时刻表
     EdgeNode * firstEdge;
  } VerNode;
  /*
@@ -46,11 +55,20 @@ void initial_Grapg(Graph &G)
 {
     G.ArcNum=0;
     G.VerNum=0;
-    for(int i=0;i<CITY_NUM;i++)
+    for(int i=0; i<CITY_NUM; i++)
     {
-        G.VerList[i].city_distance=-1;
-        G.VerList[i].city_name="";
         G.VerList[i].firstEdge=NULL;
+//        for(int j=0; j<TIME_TABLE; j++)
+//        {
+//            G.VerList[i].firstEdge->city_distance=INF;
+//            G.VerList[i].firstEdge->city_name="";
+//            G.VerList[i].firstEdge->num=0;
+//            G.VerList[i].firstEdge->next=NULL;
+//            G.VerList[i].firstEdge->train_table[j].station_No="";
+//            G.VerList[i].firstEdge->train_table[j].station_start_time="";
+//            G.VerList[i].firstEdge->train_table[j].station_arrive_time="";
+//            G.VerList[i].firstEdge->train_table[j].station_through_time="";
+//        }
     }
     cout<<"<-----initial Graph success----->\n";
 }
@@ -102,6 +120,69 @@ void create_Graph(Graph &G)
     //cout<<G.ArcNum;
     fin.close();
     cout<<"<-----create Grate success----->\n";
+}
+/////////////////////////////////////
+/*
+ *在给定的头指针的边链表内查找名字相同的城市
+ */
+void find_VerList_edgenode(EdgeNode * &head,string name,int order,string no,string start_time,
+                           string end_time,string through_time)
+{
+    EdgeNode * p = head;
+    while(p)
+    {
+        if(p->city_name == name)
+        {
+            p->train_table[order].station_No =no;
+            p->train_table[order].station_start_time=start_time;
+            p->train_table[order].station_arrive_time=end_time;
+            p->train_table[order].station_through_time=through_time;
+            return;
+        }
+        p = p->next;
+    }
+//    cout<<p->train_table[order].station_No<<" "
+//        <<p->train_table[order].station_start_time<<" "
+//        <<p->train_table[order].station_arrive_time<<" "
+//        <<p->train_table[order].station_through_time<<" "<<endl;
+}
+///////////////////////////////////
+void create_City_trainTable(Graph &G)
+{
+    int i=0,j=0,k=0;
+    string no,start,arrive,time_start,time_end,time_through,flag;
+    ifstream in("time.txt");
+    while(!in.eof())
+    {
+        in>>no>>start>>arrive>>time_start>>time_end>>time_through;
+        //start代表要出发的城市
+        i = located(G,start);
+        if(i==-1)
+            continue;
+        if(start!=flag)
+        {
+            j=0;
+        }
+        flag = start;//flag代表上一个start
+
+      //  if(i!=-1)
+        {
+            /*
+             *执行完此步后，相应的车次信息已存到边链表中
+             *如北京->上海
+             *存放的是北京到上海的所有车次信息
+             */
+            cout<<no<<" "<<start<<" "<<arrive<<" "<<time_start<<" "<<time_end<<" "<<time_through<<endl;
+           find_VerList_edgenode(G.VerList[i].firstEdge,arrive,j,no,time_start,time_end,time_through);
+//           cout<<G.VerList[i].firstEdge->train_table[j].station_No<<" "
+//                <<G.VerList[i].firstEdge->train_table[j].station_start_time<<" "
+//                <<G.VerList[i].firstEdge->train_table[j].station_arrive_time<<" "
+//                <<G.VerList[i].firstEdge->train_table[j].station_through_time<<" "
+//                <<endl;
+            j++;
+        }
+    }
+
 }
 ///////////////////////////////////
 void BFS(Graph G,int verID)
@@ -265,20 +346,14 @@ void find_city_distance(Graph G)
     PrintDijkstra(G,path,dist,vID,endID);
 
 }
+
 ////////////////////////////
  int main()
  {
      Graph City;
-     Train_time train_table;
-     initial_train(train_table);
      initial_Grapg(City);
-
-     create_train_start(train_table);
-     creat_train_time(train_table);
      create_Graph(City);
-     find_city_distance(City);
-   //BFS(City,0);
-    //read();
+    create_City_trainTable(City);
     return 0;
  }
 int located(Graph G,ElemType_name name)
