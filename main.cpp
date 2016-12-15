@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
-#include <string.h>
+#include <string>
+#include <algorithm>
 using namespace std;
 #include "linkQueue.h"
 #define CITY_NUM 60
@@ -121,6 +122,49 @@ void create_Graph(Graph &G)
     fin.close();
     cout<<"<-----create Grate success----->\n";
 }
+//////////////////////////////////////////////
+/*
+ *中文字符串模糊匹配
+ */
+vector<int> stringToVecInt(const string &str)
+{
+    union {
+        char c[2];
+        int  i;
+    } convert;
+
+    // 段位清零
+    convert.i = 0;
+
+    vector<int> vec;
+
+    for (unsigned i = 0; i < str.length(); i++) {
+        // GBK编码首字符大于0x80
+        if ((unsigned)str[i] > 0x80) {
+            // 利用union进行转化，注意是大端序
+            convert.c[1] = str[i];
+            convert.c[0] = str[i + 1];
+            vec.push_back(convert.i);
+            i++;
+        } else
+            // 小于0x80，为ASCII编码，一个字节
+            vec.push_back(str[i]);
+    }
+    return vec;
+}
+bool inclus(const string &str,const string &msg)
+{
+    auto sour = stringToVecInt(str);
+    auto find = stringToVecInt(msg);
+    for(int i=0;i<sour.size();i++)
+    {
+      // cout<<sour[i]<<"<-->"<<find[i]<<endl;
+       if(sour[i]==find[i]&&i==2)
+        return true;
+    }
+
+    return false;
+}
 /////////////////////////////////////
 /*
  *在给定的头指针的边链表内查找名字相同的城市
@@ -131,8 +175,10 @@ void find_VerList_edgenode(EdgeNode * &head,string name,int order,string no,stri
     EdgeNode * p = head;
     while(p)
     {
-        if(p->city_name == name)
+           cout<<p->city_name<<" "<<name<<endl;
+        if(inclus(p->city_name,name))
         {
+            //p = new EdgeNode;
             p->train_table[order].station_No =no;
             p->train_table[order].station_start_time=start_time;
             p->train_table[order].station_arrive_time=end_time;
@@ -141,10 +187,6 @@ void find_VerList_edgenode(EdgeNode * &head,string name,int order,string no,stri
         }
         p = p->next;
     }
-//    cout<<p->train_table[order].station_No<<" "
-//        <<p->train_table[order].station_start_time<<" "
-//        <<p->train_table[order].station_arrive_time<<" "
-//        <<p->train_table[order].station_through_time<<" "<<endl;
 }
 ///////////////////////////////////
 void create_City_trainTable(Graph &G)
@@ -172,7 +214,7 @@ void create_City_trainTable(Graph &G)
              *如北京->上海
              *存放的是北京到上海的所有车次信息
              */
-            cout<<no<<" "<<start<<" "<<arrive<<" "<<time_start<<" "<<time_end<<" "<<time_through<<endl;
+            //cout<<no<<" "<<start<<" "<<arrive<<" "<<time_start<<" "<<time_end<<" "<<time_through<<endl;
            find_VerList_edgenode(G.VerList[i].firstEdge,arrive,j,no,time_start,time_end,time_through);
 //           cout<<G.VerList[i].firstEdge->train_table[j].station_No<<" "
 //                <<G.VerList[i].firstEdge->train_table[j].station_start_time<<" "
