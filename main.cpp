@@ -76,7 +76,7 @@ void initial_Grapg(Graph &G)
 void create_Graph(Graph &G)
 {
 
-    int i=0,j,distan;
+    int i=0,j,distan,k=0;
     ElemType_name city,city1,city2,flag1,flag2;
 
     EdgeNode * p;
@@ -114,6 +114,14 @@ void create_Graph(Graph &G)
        p ->num=j;
        p ->city_name=city2;
        p ->city_distance=distan;
+       for(k=0;k<TIME_TABLE;k++)
+       {
+           p->train_table[k].station_No="";
+           p->train_table[k].station_start_time="";
+           p->train_table[k].station_arrive_time="";
+           p->train_table[k].station_through_time="";
+           p->train_table[k].train_num=0;
+       }
        p ->next=G.VerList[i].firstEdge;
        G.VerList[i].firstEdge=p;
        G.ArcNum++;
