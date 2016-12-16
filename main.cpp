@@ -207,6 +207,11 @@ void writeInTime(EdgeNode* &fistedge,int order,string no,string arrive_city,stri
             p->train_table[order].station_arrive_time=end_time;
             p->train_table[order].through_time=through_time;
             p->num=order;
+                cout<<order<<" "<<p->train_table[order].station_no<<" "
+        <<p->train_table[order].station_start_time<<" "
+        <<p->train_table[order].station_arrive_time<<" "
+        <<p->train_table[order].through_time<<endl;
+
             break;
         }
         p=p->next;
@@ -219,7 +224,7 @@ void writeInTime(EdgeNode* &fistedge,int order,string no,string arrive_city,stri
  void create_Graph_timeTable(Graph &G)
  {
     cout<<"----runing----"<<endl;
-    int i=0,j=0,k=0,flag=0;
+    int i=0,j=0,k=0,flag=0,count=0;
     string no,start,arrive,time_start,time_arrive,time_through;
     ifstream in("time.txt");
     while(!in.eof())
@@ -239,10 +244,16 @@ void writeInTime(EdgeNode* &fistedge,int order,string no,string arrive_city,stri
         if(i==-1)
             continue;
         else{
+//                if(j>100)
+//                    continue;
             writeInTime(G.VerList[i].firstEdge,j,no,arrive,time_start,time_arrive,time_through);
+            //cout<<no<<" "<<start<<" "<<arrive<<" "<<time_start<<" "<<time_arrive<<" "<<time_through<<endl;
         }
         j++;
+        count++;
     }
+    cout<<count<<endl;
+
  }
 
 /////////////////////////
@@ -387,8 +398,7 @@ void find_city_distance(Graph G)
     Graph City;
     initial_Grapg(City);
      create_Graph(City);
-
-    //create_City_trainTable(City);
+    create_Graph_timeTable(City);
     return 0;
  }
 int located(Graph G,ElemType_name name)
